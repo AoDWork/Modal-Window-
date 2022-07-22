@@ -209,4 +209,141 @@
 
 
 
-Теперь
+Теперь сделаем так что бы МО появлялось только когда мы вызываем метод open и закрывалось вызовом метода close.
+    В КСС вверху обратимся к .modal-window, .modal-overlay и пропишем видимость 0% и з индекс -1 это будут
+    значения по умолчанию, таким образом мы скрыли эл. из видимости.
+
+    .modal-window, .modal-overlay {
+        opacity: 0;
+        z-index: -1;
+    }
+
+
+    Что бы показать эл. пропишем что при наявности у wmodal класса open свойства эл. .modal-window, .modal-overlay
+    будут следующими.
+
+    .wmodal.open .modal-window, 
+    .wmodal.open .modal-overlay {
+        opacity: 1;
+        z-index: 1001;
+    }
+
+
+    Теперь заполним метод open и close. В опен мы добавляем этот класс, в клосе удаляем.
+
+        open(){
+            $modal.classList.add('open'); 
+        },
+        close() {
+            $modal.classList.remove('open'); 
+        },
+
+
+    В индекс пропишем просто модал вместо май модал и протестируем в консоли методами modal.open(); и 
+    modal.close();
+
+    const modal = $.modal();
+
+    Работает, МО появляется и исчезает по командам.
+
+
+
+
+Сделаем анимацию появления МО в КСС. Анимировать будем 2 эл. виндов и оверлей. У оверлея будем менять
+    opacity, а окно будет появляться сверху как буд то бы выпрыгивая.
+
+
+    Анимация виндоу. Для такой анимации самый простой способ поработать с transorm, изменим у modal-window
+        margin: 100px auto;    на     margin: 0px auto;
+
+        добавим позицию по умолчанию
+        transform: translateY(-1000px); - позиция по оси У(вертикаль) -1000 пкс - вверху за экраном
+
+        а когда окно будет видно с классом опен этот параметр изменится на 100пкс
+        .wmodal.open .modal-window {
+            transform: translateY(100px);
+        }
+
+        Но чтобы анимация была плавной в modal-window добавим
+        transition: transform .5s ease-in; - анимировать transform за 0.5 секунды по ф-и ease-in
+
+
+    Анимация оверлея. По умолчанию у него опасити 50%. Пропишем 0 - что бы он был не видим.
+        background: rgba(0, 0, 0, .5); на background: rgba(0, 0, 0, 0);
+
+        При видимости пропишем 50%
+        .wmodal.open .modal-overlay {
+            background: rgba(0, 0, 0, .5);
+        }
+
+        И добавим в modal-overlay
+        transition: background .2s ease-in;
+        !* при такой записи transition будет по всем 4м свойствам background image, color ...
+
+
+С анимацией закрытия проблема, так как при удалении класса опен стили сразу сбрасываются на стандартные и
+    мы не можем получить доступ к элементу. Поступим так, за время пока МО будет исчезать добавим к нему
+    класс с анимацией и потом его удалим когда МО исчезнет из видимости. Пропишем это в методе close.
+
+    Добавим в $.modal константу с количеством времени в милисекундах
+    const ANIMATION_SPEED = 200;
+    
+    а в метод close добавим класс хайдинг и таймаут, по истечении которого этот класс будет удаляться из эл.
+        close() {
+            $modal.classList.remove('open'); 
+            $modal.classList.add('hidding'); 
+            setTimeout(() =>{
+                $modal.classList.remove('hidding'); 
+            }, ANIMATION_SPEED);
+        },
+    
+
+    Пропишем класс hidding в ксс.
+
+    Пока у эл. есть клас hidding они будут иметь такие свойства. 
+    .wmodal.hidding .modal-window, 
+    .wmodal.hidding .modal-overlay {
+        opacity: 1;
+        z-index: 1001;
+    }
+
+    К таким значениям они должны плавно прийти за время и по ф-и указанными в transition
+    .wmodal.hidding .modal-window {
+        transform: translateY(-1000px);
+    }
+
+    .wmodal.hidding .modal-overlay {
+        background: rgba(0, 0, 0, 0);
+    }
+
+    Работает, теперь окно улетает вверх и края плавно светлеют.
+
+
+
+Сделаем защиту от многократного клика, что бы не получилось что во время закрытия окна мы нажали на открытие
+    и стили не наложились друг на друга. Создадим после const $modal = _createModal(options);
+    переменную closing, которую будем менять во время закрытия. Сначала на тру а после удаления класса хайдинг
+    на фолс. И добавис в опен условие что если closing не тру то тогда добавляем класс опен, иначе ничего не
+    добавится. 
+    !* При && - Если левый аргумент – false, оператор И возвращает его и заканчивает вычисления. Иначе – 
+    вычисляет и возвращает правый аргумент.
+
+    const $modal = _createModal(options);
+    const ANIMATION_SPEED = 200;
+    let closing = false;
+
+    return {
+        open(){
+            !closing && $modal.classList.add('open'); 
+        },
+        close() {
+            closing = true;
+            $modal.classList.remove('open'); 
+            $modal.classList.add('hidding'); 
+            setTimeout(() =>{
+                $modal.classList.remove('hidding'); 
+                closing = false;
+            }, ANIMATION_SPEED);
+        },
+
+Закончили первое видео. https://animate.style - библиотека с анимациями.

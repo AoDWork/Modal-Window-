@@ -29,10 +29,22 @@ $.modal = function(options) {
     }
 
     const $modal = _createModal(options);
+    const ANIMATION_SPEED = 200;
+    let closing = false;
 
     return {
-        open(){},
-        close() {},
+        open(){
+            !closing && $modal.classList.add('open'); 
+        },
+        close() {
+            closing = true;
+            $modal.classList.remove('open'); 
+            $modal.classList.add('hidding'); 
+            setTimeout(() =>{
+                $modal.classList.remove('hidding'); 
+                closing = false;
+            }, ANIMATION_SPEED);
+        },
         destroy() {}
     }
 }
