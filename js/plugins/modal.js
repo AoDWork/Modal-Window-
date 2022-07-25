@@ -21,7 +21,7 @@ $.modal = function(options) {
             $btn.classList.add(`btn-${btn.type || 'secondary'}`);
             $btn.onclick = btn.handler || noop;
 
-            wrap.appendChild($btn)
+            wrap.appendChild($btn);
         })
 
         return wrap
@@ -39,7 +39,6 @@ $.modal = function(options) {
                         ${options.closable ? `<span data-close="true" class="modal-close">&times;</span>` : ''}
                     </div>
                     <div class="modal-body" data-content>
-                        <img class="modal-body__img" src="./img/goods/female/t-shirt_blue.jpg" alt="Темна бірюза">
                         ${options.content || ''}
                     </div>
                 </div>

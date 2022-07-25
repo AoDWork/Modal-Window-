@@ -481,3 +481,24 @@ border-bottom: 1px solid #eee;
     padding: 5px 10px;
     border-top: 1px solid #eee;
 }
+
+.btn {
+    display: inline-block;
+    height: 50px;
+    padding-left: 30px;
+    padding-right: 30px;
+
+
+    border: 3px solid #bda6d4;
+    border-radius: 50px;
+
+    line-height: 44px;
+
+    font-weight: 700;
+    font-size: 16px;
+    text-transform: uppercase;
+    color: #bda6d4;
+    text-decoration: none;
+
+    transition: all 0.3s ease-in;
+}
